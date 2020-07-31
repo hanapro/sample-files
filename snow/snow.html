@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snow</title>
+  <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+  <script>
+    window.addEventListener('load', init);
+    let snows = [];
+    let stage = null;
+
+    function init() {
+      // Stageオブジェクトを作成
+      stage = new createjs.Stage('snowCanvas');
+      stage.autoClear = false;
+      
+      // 背景を塗る
+      let background = new createjs.Bitmap('./img/snow_bg.png');
+      stage.addChild(background);
+
+      // 雪を降らす
+      let snowTimer = setInterval(addSnow, 300);
+      function addSnow() {
+        let snow = new Snow();
+        snows.push(snow);
+        stage.addChild(snow);
+        
+        if (snows.length >= 100) {
+          clearInterval(snowTimer);
+        }
+      }
+
+      // 自動的に画面更新する
+      createjs.Ticker.addEventListener('tick', render);
+      
+    }
+
+
+    // 画面を更新する
+    function render() {
+      stage.update();
+      for (let i=0; i<snows.length; i++) {
+        // canvas内に存在していれば落下を実行
+        if (snows[i].life === 1) {
+          snows[i].move();
+        }
+        else {
+          // canvas外にいると位置をリセット
+          snows[i].x = Math.random() * 600;
+          snows[i].y = -10;
+          snows[i].life = 1;
+        } 
+      }
+    }
+
+    // 雪のクラス
+    class Snow extends createjs.Shape {
+      constructor() {
+        super();
+
+        this.positionX = Math.random() * 600;
+        this.positionY = -10;
+        this.speed = 1 + Math.random() * 2; // 雪が降るスピード
+        this.size = 1 + Math.random() * 5; // 雪のサイズ
+        this.angle = Math.random() * 3; // 雪の揺れの計算角度
+        this.angleSpeed = 0.02 + Math.random() * 0.08; // 揺れの変化スピードをランダムにする
+        this.swingWidth = 12 + Math.random() * 15; // 揺れの大きさ
+        this.drift = -1 + Math.random(); // X軸の向きへの加算
+        this.life = 1; // 生存フラグ
+
+
+        this.graphics
+          .beginFill("#fff")
+          .drawCircle(this.positionX, this.positionY, this.size);
+      }
+      
+
+      move() {
+        this.y += this.speed;
+        this.angle += this.angleSpeed;
+        // 少しづつ斜めに移動
+        this.positionX += this.drift;
+        // 横に揺れながら落下する
+        this.x = this.positionX + Math.sin(this.angle) * this.swingWidth;
+
+        if (this.y > stage.canvas.height) {
+          // canvasより下に落ちるとlifeを0にする
+          this.life = 0;
+        }
+        
+      }
+    }
+
+
+
+  </script>
+</head>
+<body>
+  <canvas id="snowCanvas" width="842" height="595"></canvas>
+</body>
+</html>
