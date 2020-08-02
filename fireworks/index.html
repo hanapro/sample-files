@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fireworks</title>
+  <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+  <script>
+    window.addEventListener('load', init);
+    let stage = null;
+    let width = null;
+    let height = null;
+    let fireworks = null;
+    let fireworksArray = [];
+    let frame = 0;
+
+    function init() {
+      stage = new createjs.Stage('myCanvas');
+      width = stage.canvas.width;
+      height = stage.canvas.height;
+      stage.autoClear = false;
+
+      // 背景
+      let bg = new createjs.Shape();
+      bg.graphics
+        .beginFill('#333')
+        .drawRect(0, 0, width, height);
+      bg.alpha = 0.6;
+      stage.addChild(bg);
+
+      createjs.Ticker.on('tick', render); // 自動更新を有効にする
+      createjs.Ticker.timingMode = createjs.Ticker.RAF; // 滑らかに
+    }
+
+    // 毎フレーム毎の処理
+    function render() {
+      stage.update();
+
+      // 花火を作成
+      createFireworks();
+
+      for (let i=0; i<fireworksArray.length; i++) {
+        // 打ち上げる
+        launch(fireworksArray[i]);
+        // 爆発済であれば配列・画面から削除
+        if (fireworksArray[i].isExploded) {
+          stage.removeChild(fireworksArray[i]);
+          fireworksArray.splice(i, 1);
+        }
+      }
+    }
+
+    // 花火インスタンスを生成する処理
+    function createFireworks() {
+      frame++;
+      if (frame % 50 === 0) {
+        // 50フレームごとに一回生成
+        fireworks = new Fireworks();
+        stage.addChild(fireworks);
+        fireworksArray.push(fireworks);
+      }
+    }
+
+    // 花火を打ち上げる処理
+    function launch(fireworks) {
+        fireworks.moveUp();
+        if (fireworks.ySpeed > -2) {
+          if (fireworks.life > 0) {
+            fireworks.explode();
+            fireworks.life--;
+          } 
+        }
+    }
+
+
+    // 花火クラス
+    class Fireworks extends createjs.Container {
+      constructor() {
+        super();
+
+        this.x = Math.random() * width;
+        this.y = height + Math.random() * 30;
+        this.xSpeed = -3 + Math.random() * 6;
+        this.ySpeed = -3 - Math.random() * 6;
+        this.baseColor = createjs.Graphics.getHSL(63, 50, 50);
+        this.color = createjs.Graphics.getHSL(360 * Math.random(), 50, 50);
+        this.circles = [];
+        this.round = 4; // 外に広がる円周の数
+        this.countCircle = 12; // 1周あたりの花火の数
+        this.radius = 70 + Math.random() * 250; // 花火の半径
+        this.size = Math.min(this.radius / 12, 15); // 花火の球一つあたりの大きさ
+        this.life = 1;
+        this.isExploded = false;
+        
+
+        // 中心の円
+        let centerCircle = new createjs.Shape();
+        centerCircle.graphics
+          .beginFill(this.baseColor)
+          .drawCircle(0, 0, 10);
+        this.addChild(centerCircle);
+        centerCircle.compositeOperation = "lighter";
+        this.centerCircle = centerCircle;
+
+        // 外側に広がる円
+        for (let i=0; i<this.round; i++) {
+          let circleArray = []; // 1週分の花火の配列
+          
+          // 1周あたり12個づつ花火の円を追加
+          for (let j=0; j<this.countCircle; j++) {
+            let circle = new createjs.Shape();
+                        
+            circle.compositeOperation = "lighter";
+            this.addChild(circle);
+            circleArray.push(circle);
+          }
+          this.circles.push(circleArray);
+        }
+
+      }
+
+      // 上に向かって進む処理
+      moveUp() {
+        this.x += this.xSpeed;
+        this.y += this.ySpeed;
+
+        this.ySpeed += 0.05;
+      }
+
+      // 爆発処理
+      explode() {
+
+          // 中心円のアニメーション
+          createjs.Tween.get(this.centerCircle)
+          .to({scaleX: 100, scaleY: 100, alpha: 0}, 1200, createjs.Ease.circOut)
+          ;
+
+  
+          // 外側円のアニメーション
+          for (let i=0; i<this.circles.length; i++) {
+            if (i > 0) {
+              this.color = this.baseColor; // 1番外の花火以外の色
+            }
+            for (let j=0; j<this.circles[i].length; j++) {
+
+              this.circles[i][j].graphics
+                .beginFill(this.color)
+                .drawCircle(0, 0, this.size);
+
+              let angle = j * (360 /this.countCircle);
+              let radian = angle * Math.PI / 180;
+  
+              let endX = this.radius * Math.cos(radian);
+              let endY = this.radius * Math.sin(radian);
+  
+              if (i === 0) {
+                // 1番外側の周
+                createjs.Tween.get(this.circles[i][j])
+                  .to({x: endX, y: endY, scaleX: 1.5, scaleY: 1.5 }, 1000, createjs.Ease.circOut)
+                  .wait(100)
+                  .to({alpha: 0}, 300)
+                  .call(this.changeExplodedFlag);
+              } else {
+                createjs.Tween.get(this.circles[i][j])
+                .wait(100)
+                .to({x: endX, y: endY, alpha:0}, 1000, createjs.Ease.circOut);
+              }
+            }
+            this.radius -= this.radius / 4;
+          }
+
+
+        
+      }
+      // 爆発済フラグを立てる
+      changeExplodedFlag() {
+        this.isExploded = true;
+      }
+    }
+
+
+  </script>
+</head>
+<body>
+  <canvas id="myCanvas" width="1000" height="800"></canvas>
+</body>
+</html>
