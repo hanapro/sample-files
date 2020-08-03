@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Okinawa</title>
+  <style>
+    .sample {
+      width:1000px;
+      height: 600px;
+      background: url('img/okinawa_bg.jpg');
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+    }
+    svg {
+      width: 70%;
+    }
+
+    #svg_animation .cls-1,
+    #svg_animation .cls-2 {
+      fill:none;
+      stroke:#fff;
+      stroke-linecap:round;
+      stroke-miterlimit:10;
+      stroke-dasharray: 500;
+      stroke-dashoffset: 500;
+    }
+    #svg_animation .cls-1 {
+      stroke-width:10px;
+    }
+    #svg_animation .cls-2 {
+      stroke-width:11px;
+    }
+
+
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/vivus@latest/dist/vivus.min.js"></script>
+  <script>
+    window.addEventListener('load', init);
+    function init() {
+      new Vivus(
+        'svg_animation',
+         {
+           type: 'oneByOne',
+           duration: 150,
+           forceRender: false,
+          });
+    }
+  </script>
+</head>
+<body>
+  <div class="sample">
+    <svg id="svg_animation" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 422 196">
+      <image xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="img/okinawa_mask.svg" width="422" height="196" mask="url(#clipmask)"></image>
+      <mask id="clipmask" maskUnits="objectBoundingBox">
+        <g id="mask" data-name="mask"><g id="top">
+        <path class="cls-1" d="M5,54.68c13-10,72.5-29.5,85.5-33.5"/>
+        <line class="cls-2" x1="62.5" y1="6.18" x2="70.5" y2="97.18"/>
+        <path class="cls-2" d="M67.5,38.18c-5,3-29,51-29,51"/>
+        <path class="cls-1" d="M97.5,44.18s33-13,47-14"/>
+        <path class="cls-2" d="M102.5,66.18c7.5-6.5,35-19,48-22"/>
+        <path class="cls-1" d="M130.5,16.18c-4.5,6.5-1.5,50.5,10,71"/>
+        <path class="cls-1" d="M165.5,42.18c11.5-7.5,38.5-13.5,50-15"/>
+        <path class="cls-2" d="M196,16.68c-3,18-5,56-4.5,70.5"/>
+        <path class="cls-1" d="M231,14.68s6.5,28.5,11,31"/>
+        <path class="cls-2" d="M233.5,16.18S289-5.32,296,12.68s-25,75-34.5,90.5"/>
+        <path class="cls-1" d="M131.5,157.18s5.5,23.5,11.5,23.5,16.5-9.5,16.5-11.5"/>
+        <line class="cls-1" x1="171.5" y1="150.18" x2="171.5" y2="172.18"/>
+        <path class="cls-1" d="M194,143.68c2-3,23.5-9.5,29.5-6.5"/>
+        <path class="cls-1" d="M196,161.68c5-5,22.5-11.5,31.5-11.5"/>
+        <path class="cls-2" d="M215,128.68s2,39,2.5,43.5"/>
+        <path class="cls-1" d="M200,180.68c2,5,20.5,6.5,27.5,4.5"/>
+        <path class="cls-1" d="M247,142.68s28.5-11.5,38.5-12.5"/>
+        <path class="cls-2" d="M269,124.68c-1.85,2.26-10.5,45.5-1.5,65.5"/>
+        <path class="cls-1" d="M276,161.68s16-14,23.5-12.5"/>
+        <path class="cls-1" d="M286,168.68c3,11,19,8,27.5-2.5"/>
+        <path class="cls-1" d="M332.5,144.18c-3,4,4.5,17.5,8.5,19.5s12.5-8.5,12.5-8.5"/>
+        <path class="cls-1" d="M362.5,130.18c2.5,2.5,4,25,3,29"/>
+        <path class="cls-1" d="M398,150.68c-6,7-3.06,20.3,5,20,13.5-.5,21.76-26.44,4-30-5-1-12,5-10.5,6.5"/></g></g>
+      <mask id="clipmask" maskUnits="objectBoundingBox"></mask>
+    </svg>
+      
+  </div>
+</body>
+</html>
