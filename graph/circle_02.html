@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circle</title>
+  <style>
+    
+  </style>
+  <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+	<script>
+    window.addEventListener('load', init);
+    let stage = null;
+    let width = null;
+    let height = null;
+    let box = null;
+    let arc = null;
+    let perseNumArray = []; // 表現したい数字（%）の配列
+    let startAngle = -90; // 開始角（90度ずらす）
+    let arcArray = [];
+    let easingArray = ['cubicIn', 'cubicOut', 'cubicInOut'];
+
+
+    function init() {
+      stage = new createjs.Stage('myCanvas');
+      width = stage.canvas.width;
+      height = stage.canvas.height;
+      
+      // パーセンテージ設定
+      perseNumArray = [80, 80, 80];
+
+      // 背景
+      let bg = new createjs.Shape();
+      bg.graphics
+        .beginFill('#b3dfe9')
+        .drawRect(0, 0, width, height);
+      stage.addChild(bg);
+      
+      // Containerの作成
+      for (let i=0; i<3; i++) {
+        box = new createjs.Container();
+        box.x = 150 + (i * 240);
+        box.y = height / 2 - 15;
+        stage.addChild(box);
+
+        // ベースの円
+        let baseCircle = new createjs.Shape();
+        baseCircle.graphics
+          .beginFill('#80c6d8')
+          .drawCircle(0, 0, 100);
+        box.addChild(baseCircle);
+        
+        // 円弧
+        arc = new createjs.Shape();
+        arc.endAngle = 0; // 独自プロパティに初期値を設定する
+        arcArray.push(arc);
+        box.addChild(arc);
+
+        // 上の円
+        let onCircle = new createjs.Shape();
+        onCircle.graphics
+          .beginFill('#b3dfe9')
+          .drawCircle(0, 0, 70);
+        onCircle.shadow = new createjs.Shadow("#90a8b2", 0, 0, 8);
+        box.addChild(onCircle);
+
+        // テキスト
+        let num = new createjs.Text(perseNumArray[i], "bold 34px san-serif", "#fff");
+        num.textAlign = "center";
+        num.textBaseline = "middle";
+        num.x = 0;
+        num.y = -10;
+        box.addChild(num);
+
+        let persent = new createjs.Text("percent", "18px san-serif", "#fff");
+        persent.textAlign = "center";
+        persent.textBaseline = "middle";
+        persent.x = 0;
+        persent.y = 15;
+        box.addChild(persent);
+
+        let easing = new createjs.Text(easingArray[i], "18px san-serif", "#fff");
+        easing.textAlign = "center";
+        easing.textBaseline = "middle";
+        easing.x = 0;
+        easing.y = 130;
+        box.addChild(easing);
+
+      }
+
+      // 各円弧のアニメーション設定
+      for (let i=0; i<arcArray.length; i++) {
+        switch(i) {
+          case 0:
+            createjs.Tween.get(arcArray[i])
+              .to({endAngle : perseNumArray[i] * 3.6}, 800, createjs.Ease.cubicIn);
+          break;
+          case 1:
+            createjs.Tween.get(arcArray[i])
+              .to({endAngle : perseNumArray[i] * 3.6}, 800, createjs.Ease.cubicOut);
+          break;
+          case 2:
+            createjs.Tween.get(arcArray[i])
+              .to({endAngle : perseNumArray[i] * 3.6}, 800, createjs.Ease.cubicInOut);
+          break;
+
+        }
+      }
+      
+
+      createjs.Ticker.addEventListener('tick', render);
+      createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    }
+
+    function render() {
+      for (let i=0; i<arcArray.length; i++) {
+        arcArray[i].graphics
+          .beginFill('#f0f8fa')
+          .arc(0, 0, 100, startAngle * Math.PI / 180, (arcArray[i].endAngle - 90) * Math.PI / 180, 0)
+          .lineTo(0, 0)
+          .closePath();
+      }
+      
+      
+      stage.update();
+    }
+  </script>
+</head>
+<body>
+  <div class="canvas_wrapper">
+    <canvas id="myCanvas" width="800" height="460"></canvas>
+  </div>
+</body>
+</html>

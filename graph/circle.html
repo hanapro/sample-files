@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Circle</title>
+  <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+	<script>
+    window.addEventListener('load', init);
+    let stage = null;
+    let width = null;
+    let height = null;
+    let arc = null;
+    let perseNum = 80; // 表現したい数字（%）
+    let startAngle = -90; // 開始角（90度ずらす）
+    let toAngle = perseNum * 3.6; // 終了角 
+
+    function init() {
+      stage = new createjs.Stage('myCanvas');
+      width = stage.canvas.width;
+      height = stage.canvas.height;
+
+      // 背景
+      let bg = new createjs.Shape();
+      bg.graphics
+        .beginFill('#b3dfe9')
+        .drawRect(0, 0, width, height);
+      stage.addChild(bg);
+      
+      // ベースの円
+      let baseCircle = new createjs.Shape();
+      baseCircle.graphics
+        .beginFill('#80c6d8')
+        .drawCircle(width / 2, height / 2, 100);
+      stage.addChild(baseCircle);
+      
+      // 円弧
+      arc = new createjs.Shape();
+      arc.endAngle = 0; // 独自プロパティに初期値を設定する
+
+      createjs.Tween.get(arc)
+        .to({endAngle : toAngle}, 500);
+      
+      stage.addChild(arc);
+
+      // 上の円
+      let onCircle = new createjs.Shape();
+      onCircle.graphics
+        .beginFill('#b3dfe9')
+        .drawCircle(width / 2, height / 2, 70);
+      onCircle.shadow = new createjs.Shadow("#90a8b2", 0, 0, 8);
+      stage.addChild(onCircle);
+
+      // テキスト
+      let num = new createjs.Text(perseNum, "bold 34px san-serif", "#fff");
+      num.textAlign = "center";
+      num.textBaseline = "middle";
+      num.x = width / 2;
+      num.y = height / 2 - 10;
+      stage.addChild(num);
+
+      let persent = new createjs.Text("percent", "18px san-serif", "#fff");
+      persent.textAlign = "center";
+      persent.textBaseline = "middle";
+      persent.x = width / 2;
+      persent.y = height / 2 + 15;
+      stage.addChild(persent);
+
+      createjs.Ticker.addEventListener('tick', render);
+      createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    }
+
+    function render() {
+      arc.graphics
+        .beginFill('#f0f8fa')
+        .arc(width / 2, height / 2, 100, startAngle * Math.PI / 180, (arc.endAngle - 90) * Math.PI / 180, 0)
+        .lineTo(width / 2, height / 2)
+        .closePath();
+      
+      
+      stage.update();
+    }
+  </script>
+</head>
+<body>
+  <div class="canvas_wrapper">
+    <canvas id="myCanvas" width="640" height="460"></canvas>
+  </div>
+</body>
+</html>
