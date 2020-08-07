@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Stars</title>
+	<script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+	<script src="stars.js"></script>
+	<script>
+		window.addEventListener('load', init);
+		let stage = null;
+		let width = null;
+		let height = null;
+		let comp = AdobeAn.getComposition("2598143CDF49E34C858423A334E1F8FE");
+		let lib = comp.getLibrary();
+		let cloud = null;
+		let cloudArray = [];
+		let colorCloudGreen = null;
+		let colorCloudBlue = null;
+		let colorCloudPink = null;
+		let meteorArray = [];
+		let frame = 0;
+
+		function init() {
+			stage = new createjs.Stage('myCanvas');
+			width = stage.canvas.width;
+			height = stage.canvas.height;
+			let circleBaseCount = 140; // 点の星の数
+			let shineStarCount01 = 25; // 輝く星1 の数
+			let shineStarCount02 = 30; // 輝く星2 の数
+			let shineStarCount03 = 40; // 輝く星3 の数
+			let cloudNames = ['cloud01.png', 'cloud03.png'];
+			let cloudCound = 6;
+
+			
+			// 背景の空
+			// Animate CCのシンボル名の先頭に「lib.」をつけると利用できる
+			let bg = new lib.background();
+			stage.addChild(bg);
+
+			// 両サイドの雲
+			for (let i=0; i<cloudCound; i++) {
+				let num = Math.round(Math.random() * 1);
+				cloud = new createjs.Bitmap('./img/' + cloudNames[num]);
+
+				if (i % 2 === 0) {
+					cloud.scaleX = cloud.scaleY = 0.4 + Math.random() * 0.3 ;
+					cloud.x = -140;
+					cloud.y = Math.random() * height - 200;
+				}
+				else {
+					cloud.scaleX = cloud.scaleY = 0.4 + Math.random() * 0.3 ;
+					cloud.x = width - 200;
+					cloud.y = Math.random() * height - 200;
+				}
+				cloudArray.push(cloud);
+				stage.addChild(cloud);
+
+			}
+			
+			// 彩雲
+			colorCloudGreen = new lib.saiun_green02();
+			colorCloudGreen.x = 240;
+			colorCloudGreen.y = height - 100;
+			colorCloudGreen.rotation = 20;
+			colorCloudGreen.alpha = 0.7;
+			colorCloudGreen.speed = 0.03;
+			stage.addChild(colorCloudGreen);
+			
+			colorCloudBlue = new lib.saiun_blue02();
+			colorCloudBlue.x = 130;
+			colorCloudBlue.y = height - 100;
+			colorCloudBlue.alpha = 0.7;
+			colorCloudBlue.rotation = 10;
+			colorCloudBlue.speed = 0.02;
+			stage.addChild(colorCloudBlue);
+			
+			colorCloudPink = new lib.saiun_pink02();
+			colorCloudPink.x = 160;
+			colorCloudPink.y = height - 140;
+			colorCloudPink.alpha = 0.6;
+			colorCloudPink.speed = 0.03;
+			stage.addChild(colorCloudPink);
+
+
+			// 輝く星1
+			for (let i=0; i<shineStarCount01; i++) {
+				let star = new lib.star_01();
+				star.x = 200 + Math.random() * 400;
+				star.y = Math.random() * height - 100;;
+				star.scaleX = star.scaleY = 0.2 + Math.random() * 0.3;
+				stage.addChild(star);
+
+				// 点滅させるタイミングを変更する
+				if (i % 5 === 0) {
+					star.gotoAndPlay(50);
+				} else if (i % 2 === 0) {
+					star.gotoAndPlay(80);
+				}
+			}
+			
+			// 輝く星2
+			for (let i=0; i<shineStarCount02; i++) {
+				let star = new lib.star_02();
+				star.x = 200 + Math.random() * 500;
+				star.y = Math.random() * height - 100;;
+				star.scaleX = star.scaleY = 0.05 + Math.random() * 0.2;
+				stage.addChild(star);
+				// 点滅させるタイミングを変更する
+				if (i % 5 === 0) {
+					star.gotoAndPlay(40);
+				} else if (i % 2 === 0) {
+					star.gotoAndPlay(60);
+				}
+			}
+			
+			// 輝く星3
+			for (let i=0; i<shineStarCount03; i++) {
+				let star = new lib.star_03();
+				star.x = 100 + Math.random() * 700;
+				star.y = Math.random() * height - 100;;
+				star.scaleX = star.scaleY = 0.1 + Math.random() * 0.2;
+				stage.addChild(star);
+				// 点滅させるタイミングを変更する
+				if (i % 5 === 0) {
+					star.gotoAndPlay(40);
+				} else if (i % 2 === 0) {
+					star.gotoAndPlay(60);
+				}
+			}
+			
+			// 白丸の星
+			for (let i=0; i<circleBaseCount; i++) {
+				let circleStar = new lib.circle_base02();
+				circleStar.x = Math.random() * width;
+				circleStar.y = Math.random() * height - 120;
+				circleStar.scaleX = circleStar.scaleY = 0.2 + Math.random() * 0.5;
+				stage.addChild(circleStar);
+			}
+	
+			
+			// 山
+			let mountain = new lib.mountain();
+			mountain.x = width / 2;
+			mountain.y = height;
+			mountain.scaleX = 0.7;
+			stage.addChild(mountain);
+			
+			createjs.Ticker.on('tick', render); // 自動更新を有効にする
+      createjs.Ticker.timingMode = createjs.Ticker.RAF; // 滑らかに
+		}
+		
+		function render() {
+			stage.update();
+
+			frame++;
+			// 流れ星を発生
+			if (frame % 5 === 0) {
+				let meteor = new lib.meteor();
+				meteor.scaleX = meteor.scaleY = 0.02 + Math.random() * 0.05;
+				meteor.x = Math.random() * width;
+				meteor.y = Math.random() * height - 300;
+				meteorArray.push(meteor);
+				stage.addChild(meteor);
+			}
+			// 流れ終えたらstageから削除
+			for (let i=0; i<meteorArray.length; i++) {
+				if (meteorArray[i].isEnded === true) {
+					stage.removeChild(meteorArray[i]);
+				}
+			}
+
+			// 彩雲を回転
+			colorCloudGreen.rotation += colorCloudGreen.speed;
+			if (colorCloudGreen.rotation >= 30 || colorCloudGreen.rotation <= 20) {
+				colorCloudGreen.speed *= -1;
+			}
+			colorCloudBlue.rotation += colorCloudBlue.speed;
+			if (colorCloudBlue.rotation >= 20 || colorCloudBlue.rotation <= 10) {
+				colorCloudBlue.speed *= -1;
+			}
+			colorCloudPink.rotation += colorCloudPink.speed;
+			if (colorCloudPink.rotation >= 20 || colorCloudPink.rotation <= 0) {
+				colorCloudPink.speed *= -1;
+			}
+
+			// 雲を移動
+			for (let i=0; i<cloudArray.length; i++) {
+				cloudArray[i].x += 0.1;
+				if (cloudArray[i].x > width + 100) {
+					cloudArray[i].x = -400;
+				}
+			}
+		}
+
+
+	</script>
+</head>
+<body>
+	<canvas id="myCanvas" width="900" height="600"></canvas>
+</body>
+</html>
