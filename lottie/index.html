@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LOTTIE SAMPLE</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.6.6/lottie.min.js"
+  type="text/javascript"></script>
+  <style>
+    #graph {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+</head>
+<body>
+  <div id="graph"></div>
+  <script>
+     lottie.loadAnimation({
+         container: document.getElementById("graph"), //HTMLのID
+         renderer: "svg", // 描画形式
+         loop: false, //ループするかどうか
+         autoplay: true, //自動再生
+         path: "data.json" //jsonファイルの場所
+     });
+ 
+  </script>
+</body>
+</html>
